@@ -1,13 +1,12 @@
-// app.js
 const express = require('express');
-const sql = require('mssql');
-const insertUpdateRoutes = require('./routes/insertUpdateRoutes');
-const config = require('./dbConfig');
+const menu_login = require('./routes/menu_login');
+const { sql, getPool } = require("./db");
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 
 const app = express();
 
-const allowedOrigins = ['https://www.welltrackone.com', 'http://localhost:3000', 'https://careone-backend.com'];
+const allowedOrigins = ['http://localhost:3002', 'http://127.0.0.1:3002', 'http://localhost:3001', 'http://127.0.0.1:3001', 'https://careone-health.com', 'https://www.careone-health.com', 'http://127.0.0.1:3002'];
 
 app.use(cors({
   origin: function (origin, callback) {
@@ -24,28 +23,32 @@ app.use(cors({
 // Middleware to parse incoming requests with JSON payloads
 app.use(express.json());
 
+// Middleware to parse cookies
+app.use(cookieParser());
+
 
 // Handling preflight requests
-app.options('*', cors());
+app.use(cors({
+    origin: '*',
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    exposedHeaders: ['Set-Cookie']
+}));
 
 // Use the insert/update routes
-app.use('/api', insertUpdateRoutes);
+app.use('/api', menu_login);
 
 // Function to test the database connection
-const testDatabaseConnection = async () => {
-  try {
-    const pool = await sql.connect(config);
-    console.log('Database connection successful!');
-    await pool.close(); // Close the connection after testing
-  } catch (err) {
-    console.error('Database connection failed:', err);
-  }
-};
+// const testDatabaseConnection = async () => {
+//   try {
+//     const pool = await getPool();
+//     console.log('Database connection successful!');
+//     await pool.close(); // Close the connection after testing
+//   } catch (err) {
+//     console.error('Database connection failed:', err);
+//   }
+// };
 
 // Call the test function before starting the server
-testDatabaseConnection().then(() => {
-  const port = process.env.PORT || 3001;
-  app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
-  });
-});
+app.listen(3001, () => console.log("Server running on port 3001"));
