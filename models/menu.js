@@ -9,15 +9,15 @@ const get_menus = async () => {
         c.PortalCategories_ID, 
         c.PortalCategoriesName, 
         c.PortalCategoriesLongDescription, 
-        c.PortalCategoriesDescription AS CategoryDescription, 
+        c.PortalCategoriesDescription AS PortalCategoriesDescription, 
         p.PortalComponents_ID, 
         p.PortalComponentsName, 
         p.PortalComponentsDescription, 
         p.ExternalLink
       FROM [Wellness_eCastEMR_Data].[dbo].[PortalCategories] c
       LEFT JOIN [Wellness_eCastEMR_Data].[dbo].[PortalComponents] p ON p.PortalCategories_ID = c.PortalCategories_ID
-      WHERE ISNULL(c.Hidden, 0) = 0  -- only visible categories
-        AND ISNULL(p.Hidden, 0) = 0  -- only visible components
+      WHERE ISNULL(c.Hidden, 0) = 0  
+        AND ISNULL(p.Hidden, 0) = 0 
       ORDER BY c.PortalCategoriesName, p.PortalComponentsName;
     `);
 

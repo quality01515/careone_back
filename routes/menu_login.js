@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { check_login } = require("../models/auth");
+const { check_login, check_HRA_status } = require("../models/auth");
 const { get_menus } = require("../models/menu");
 const jwt = require("jsonwebtoken")
 const { userAuth } = require("../middlewares/auth.js");
@@ -21,8 +21,8 @@ router.get('/menu', userAuth, async (req, res) => {
         categoryMap.set(item.PortalCategories_ID, {
           PortalCategories_ID: item.PortalCategories_ID,
           PortalCategoriesName: item.PortalCategoriesName,
-          PortalCategoriesLongName: item.PortalCategoriesLongName,
-          CategoryDescription: item.CategoryDescription,
+          PortalCategoriesLongName: item.PortalCategoriesLongDescription,
+          PortalCategoriesDescription: item.PortalCategoriesDescription,
           components: [],
         });
       }
@@ -60,8 +60,6 @@ router.post('/login', async (req, res) => {
 
     const result = await check_login(last_name, formattedDob, phone_email);
 
-    console.log('Query Result:', result.recordset);  
-
     if (result.recordset.length > 0) {
       const token = await jwt.sign({last_name, formattedDob, phone_email}, "CAREONE_JOURNEY", {expiresIn: "1h"});
 
@@ -69,10 +67,18 @@ router.post('/login', async (req, res) => {
           expires: new Date(Date.now() + 3600000),
           httpOnly: true, 
       });
+
+      let patient_id = result.recordset[0]['Patient_ID']
+
+      const hra_status = await check_HRA_status(patient_id)
+
       res.json({
         status: true,
-        token
+        token,
+        patient_id,
+        ...hra_status
       }); 
+      
     } else {
       res.json({
         status: false

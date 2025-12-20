@@ -5,7 +5,6 @@ const userAuth= (async (req, res, next)=>{
     try{
         // Check Authorization header (Express normalizes headers to lowercase)
         const authHeader = req.headers['authorization'] || req.headers['Authorization'];
-        console.log("--->>>", authHeader);
 
         let token = null;
 
@@ -25,8 +24,6 @@ const userAuth= (async (req, res, next)=>{
         const {last_name, formattedDob, phone_email}= decodedObj;
 
         const result = await check_login(last_name, formattedDob, phone_email);
-
-        console.log('Query Result:', result.recordset);  
 
         if (result.recordset.length > 0) {
             // User is authenticated, attach user info to request and proceed
