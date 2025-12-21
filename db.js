@@ -6,6 +6,7 @@ const config = {
   password: process.env.DB_PASSWORD,
   server: String(process.env.DB_SERVER || ""),         // e.g. DESKTOP-80CFN3P
   database: process.env.DB_NAME,          // e.g. MyDb
+  port: Number(process.env.DB_PORT || 1433),
   options: {
     encrypt: false,                       // usually false for local SQL Server 2012
     trustServerCertificate: true,         // helpful for local/dev
