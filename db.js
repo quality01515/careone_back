@@ -1,55 +1,95 @@
 const sql = require("mssql");
+const config = require("./database");
 require("dotenv").config();
 
-const config = {
-  user: process.env.DB_USER,              // e.g. WT1_SQL_Admin
-  password: process.env.DB_PASSWORD,
-  server: String(process.env.DB_SERVER || ""),         // e.g. DESKTOP-80CFN3P
-  database: process.env.DB_NAME,          // e.g. MyDb
-  port: 1433,
-  options: {
-    encrypt: false,                       // usually false for local SQL Server 2012
-    trustServerCertificate: true,         // helpful for local/dev
-  },
-  pool: {
-    max: 10,
-    min: 0,
-    idleTimeoutMillis: 30000,
-  },
-};
+// Store the connection pool
+let poolPromise = null;
 
-async function test() {
-  try {
-    const pool = await sql.connect(config);
-    const r = await pool.request().query("SELECT SUSER_SNAME() AS login, DB_NAME() AS db");
-    console.log("CONNECTED AS:", r.recordset[0]);
-    await pool.close();
-  } catch (e) {
-    console.error("CONNECT FAILED:", e);
-  }
-}
-
-let poolPromise;
-
-function getPool() {
-  if (!poolPromise) {
-    poolPromise = new sql.ConnectionPool(config)
-      .connect()
-      .then(pool => {
-        console.log("✅ Connected to SQL Server");
-        pool.on("error", err => {
-          console.error("SQL pool error:", err);
-          // If you want auto-reconnect, set poolPromise = null here.
-        });
+/**
+ * Get or create the database connection pool
+ * @returns {Promise<ConnectionPool>} SQL Server connection pool
+ */
+async function getPool() {
+  // If pool already exists and is connected, return it
+  if (poolPromise) {
+    try {
+      const pool = await poolPromise;
+      // Check if pool is still connected
+      if (pool && pool.connected) {
         return pool;
-      })
-      .catch(err => {
-        poolPromise = null; // important: allow retry next time
-        console.error("❌ SQL connection failed:", err);
-        throw err;
-      });
+      }
+      // If not connected, remove it and create a new one
+      poolPromise = null;
+    } catch (err) {
+      // If promise was rejected, remove it and create a new one
+      poolPromise = null;
+    }
   }
+
+  // Create new pool
+  poolPromise = new sql.ConnectionPool(config)
+    .connect()
+    .then(pool => {
+      if (config.debug) {
+        console.log(`✅ Connected to SQL Server database: ${config.database}`);
+        console.log(`   Server: ${config.server}:${config.port}`);
+      }
+      pool.on("error", err => {
+        console.error("SQL pool error:", err);
+        // Clear the pool on error to allow reconnection
+        poolPromise = null;
+      });
+      return pool;
+    })
+    .catch(err => {
+      poolPromise = null; // Clear failed pool
+      console.error("❌ SQL connection failed:", err);
+      throw err;
+    });
+
   return poolPromise;
 }
 
-module.exports = { sql, getPool, test };
+/**
+ * Close the database connection pool
+ * Useful for graceful shutdown
+ */
+async function closePool() {
+  if (poolPromise) {
+    try {
+      const pool = await poolPromise;
+      if (pool && pool.close) {
+        await pool.close();
+        if (config.debug) {
+          console.log("Closed database connection pool");
+        }
+      }
+    } catch (err) {
+      console.error("Error closing pool:", err);
+    } finally {
+      poolPromise = null;
+    }
+  }
+}
+
+/**
+ * Test database connection
+ */
+async function test() {
+  try {
+    const pool = await getPool();
+    const result = await pool.request().query("SELECT SUSER_SNAME() AS login, DB_NAME() AS db");
+    console.log("✅ CONNECTED:", result.recordset[0]);
+  } catch (e) {
+    console.error("❌ CONNECT FAILED:", e);
+    throw e;
+  }
+}
+
+// Export everything
+module.exports = {
+  sql,
+  getPool,
+  test,
+  closePool,
+};
