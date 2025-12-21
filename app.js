@@ -1,6 +1,6 @@
 const express = require('express');
 const menu_login = require('./routes/menu_login');
-const { sql, getPool } = require("./db");
+const { sql, getPool,test } = require("./db");
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 
@@ -52,3 +52,5 @@ app.use('/api', menu_login);
 
 // Call the test function before starting the server
 app.listen(3001, () => console.log("Server running on port 3001"));
+
+test();

@@ -6,7 +6,7 @@ const config = {
   password: process.env.DB_PASSWORD,
   server: String(process.env.DB_SERVER || ""),         // e.g. DESKTOP-80CFN3P
   database: process.env.DB_NAME,          // e.g. MyDb
-  port: Number(process.env.DB_PORT || 1433),
+  port: 1433,
   options: {
     encrypt: false,                       // usually false for local SQL Server 2012
     trustServerCertificate: true,         // helpful for local/dev
@@ -17,6 +17,17 @@ const config = {
     idleTimeoutMillis: 30000,
   },
 };
+
+async function test() {
+  try {
+    const pool = await sql.connect(config);
+    const r = await pool.request().query("SELECT SUSER_SNAME() AS login, DB_NAME() AS db");
+    console.log("CONNECTED AS:", r.recordset[0]);
+    await pool.close();
+  } catch (e) {
+    console.error("CONNECT FAILED:", e);
+  }
+}
 
 let poolPromise;
 
@@ -41,4 +52,4 @@ function getPool() {
   return poolPromise;
 }
 
-module.exports = { sql, getPool };
+module.exports = { sql, getPool, test };
