@@ -8,6 +8,7 @@ const app = express();
 
 const allowedOrigins = ['http://localhost:3002', 'http://127.0.0.1:3002', 'http://localhost:3001', 'http://127.0.0.1:3001', 'https://careone-health.com', 'https://www.careone-health.com', 'http://127.0.0.1:3002'];
 
+// CORS configuration
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin) return callback(null, true); // Allow non-browser requests like Postman
@@ -17,7 +18,10 @@ app.use(cors({
       callback(new Error('Not allowed by CORS'));
     }
   },
-  credentials: true // If using cookies or session authentication
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  exposedHeaders: ['Set-Cookie']
 }));
 
 // Middleware to parse incoming requests with JSON payloads
@@ -25,16 +29,6 @@ app.use(express.json());
 
 // Middleware to parse cookies
 app.use(cookieParser());
-
-
-// Handling preflight requests
-app.use(cors({
-    origin: '*',
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-    exposedHeaders: ['Set-Cookie']
-}));
 
 // Use the insert/update routes
 app.use('/api', menu_login);
@@ -50,7 +44,19 @@ app.use('/api', menu_login);
 //   }
 // };
 
-// Call the test function before starting the server
-app.listen(3001, () => console.log("Server running on port 3001"));
+// Get port from environment variable (set by IIS) or use default
+const PORT = process.env.PORT || process.env.HTTP_PLATFORM_PORT || 3001;
 
-test();
+// Call the test function before starting the server
+const server = app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+});
+
+// Test database connection
+test().catch(err => {
+  console.error('Database connection test failed:', err);
+});
+
+// Export app for testing or other uses
+module.exports = app;
