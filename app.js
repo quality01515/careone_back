@@ -1,5 +1,7 @@
 const express = require('express');
-const menu_login = require('./routes/menu_login');
+const menu_route = require('./routes/menu');
+const login_route = require('./routes/login');
+const choice_route = require('./routes/choice');
 const { sql, getPool,test } = require("./db");
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
@@ -50,7 +52,9 @@ app.get('/health', (req, res) => {
 });
 
 // Use the insert/update routes
-app.use('/api', menu_login);
+app.use('/api/menu', menu_route);
+app.use('/api/login', login_route);
+app.use('/api/choice', choice_route);
 
 // Error handling middleware (should be after all routes)
 app.use((err, req, res, next) => {
@@ -65,17 +69,6 @@ app.use((err, req, res, next) => {
 app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
-
-// Function to test the database connection
-// const testDatabaseConnection = async () => {
-//   try {
-//     const pool = await getPool();
-//     console.log('Database connection successful!');
-//     await pool.close(); // Close the connection after testing
-//   } catch (err) {
-//     console.error('Database connection failed:', err);
-//   }
-// };
 
 // Get port from environment variable (set by IIS) or use default
 const PORT = process.env.PORT || process.env.HTTP_PLATFORM_PORT || 3001;
