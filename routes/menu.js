@@ -6,10 +6,10 @@ const { userAuth } = require("../middlewares/auth.js");
 require('dotenv').config();
 
 
-router.get('/', userAuth, async (req, res) => {  
+router.post('/', userAuth, async (req, res) => {  
    try {
-    
-    const result = await get_menus();
+    let patient_id = req.body.patient_id;
+    const result = await get_menus(patient_id);
 
     const categories = result.recordset;
 
@@ -22,6 +22,7 @@ router.get('/', userAuth, async (req, res) => {
           PortalCategoriesName: item.PortalCategoriesName,
           PortalCategoriesLongName: item.PortalCategoriesLongDescription,
           PortalCategoriesDescription: item.PortalCategoriesDescription,
+          PortalCategoriesURL: item.PortalCategoriesURL,
           components: [],
         });
       }
@@ -32,6 +33,7 @@ router.get('/', userAuth, async (req, res) => {
         PortalComponentsName: item.PortalComponentsName,
         PortalComponentsDescription: item.PortalComponentsDescription,
         ExternalLink: item.ExternalLink,
+        Hidden: item.Hidden == 0? 0 : 1
       });
     });
 
