@@ -27,7 +27,8 @@ router.post('/', async (req, res) => {
           httpOnly: true, 
       });
 
-      let patient_id = result.recordset[0]['Patient_ID']
+      let patient_id = result.recordset[0]['Patient_ID'];
+      let first_name = result.recordset[0]['FirstName'];
 
       const hra_status = await check_HRA_status(patient_id)
 
@@ -35,6 +36,8 @@ router.post('/', async (req, res) => {
         status: true,
         token,
         patient_id,
+        first_name,
+        last_name,
         ...hra_status
       }); 
       
