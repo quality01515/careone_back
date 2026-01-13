@@ -38,6 +38,7 @@ router.post('/', async (req, res) => {
         patient_id,
         first_name,
         last_name,
+        dob,
         ...hra_status
       }); 
       
