@@ -23,7 +23,8 @@ router.post('/', async (req, res) => {
       const token = await jwt.sign({last_name, formattedDob, phone_email}, "CAREONE_JOURNEY", {expiresIn: "1h"});
 
       res.cookie("token", token, {
-          expires: new Date(Date.now() + 3600000),
+          // expires: new Date(Date.now() + 1800000),
+          expires: new Date(Date.now() + 2000),
           httpOnly: true, 
       });
 

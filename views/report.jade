@@ -1,0 +1,77 @@
+extends layout
+
+block content
+  link(rel='stylesheet', href='/stylesheets/report.css')
+
+  .toolbar
+    button#printBtn(type='button') Print
+    a#downloadLink(href='/api/report/pdf?patient_id=' + (patient && patient.Patient_ID ? patient.Patient_ID : '')) Download PDF
+
+  .header
+    h2.supplemental Supplemental Information
+    .date-row Date: #{generatedAt.toDateString()} – Patient Journey Report
+    h1.title Patient Journey Report
+
+    if patient
+      .demographics
+        .left
+          .row
+            span.label Patient Name:
+            span.value #{[patient.FirstName, patient.LastName].filter(Boolean).join(' ')}
+          .row
+            span.label Date:
+            if patient.DOB
+              span.value #{new Date(patient.DOB).toDateString()}
+            else
+              span.value #{generatedAt.toDateString()}
+          .row
+            if patient.PrimaryProviderName
+              span.label Healthcare Provider:
+              span.value #{patient.PrimaryProviderName}
+        .right
+          .row
+            if patient.MRN
+              span.label MRN:
+              span.value #{patient.MRN}
+          .row
+            if patient.PracticeName
+              span.label Practice:
+              span.value #{patient.PracticeName}
+          .row
+            if patient.PracticeCity || patient.PracticeState
+              span.value #{[patient.PracticeCity, patient.PracticeState].filter(Boolean).join(' ')}
+      .divider
+
+    p.notice
+      | Your personalized Patient Journey is shown below based upon your choices. You may change these items at any time by modifying the items in your Patient Journey application. Your clinical team will begin working with you to help you accomplish the goals shown below.
+
+  .content
+    table.report-table
+      thead
+        tr
+          th Category
+          th Components parts of each Category
+      tbody
+        each cat in categories
+          tr.category-row
+            td.category-name #{cat.PortalCategoriesName}
+            td.components
+              if cat.components && cat.components.length
+                ul.component-list
+                  each comp in cat.components
+                    li(class=isSelected(comp) ? 'selected' : 'unselected')
+                      span.icon #{isSelected(comp) ? '❤' : '•'}
+                      span.txt #{comp.PortalComponentsName}
+              else
+                | No components available
+
+  script.
+    (function(){
+      var btn=document.getElementById('printBtn');
+      if(btn){btn.addEventListener('click', function(){ window.print(); });}
+      // open in same tab to trigger download
+      var link=document.getElementById('downloadLink');
+      if(link){ link.addEventListener('click', function(){
+        // allow default navigation
+      });}
+    })();

@@ -1,0 +1,62 @@
+/* Report specific styling */
+:root{
+  --teal:#0f7d8e;
+  --gray:#555;
+  --light:#f2f7f7;
+  --border:#d9e3e4;
+  --brand:#35A7CF;
+}
+body{
+  font-family: Arial, Helvetica, sans-serif;
+  color:#222;
+}
+.toolbar{
+  display:flex;
+  gap:12px;
+  margin-bottom:16px;
+}
+.toolbar button, .toolbar a{
+  background:var(--teal);
+  color:#fff;
+  border:none;
+  padding:8px 14px;
+  border-radius:4px;
+  text-decoration:none;
+  font-weight:600;
+}
+.header .date-row{ color:#333; margin-bottom:8px; }
+.header .supplemental{ font-size:20px; font-weight:700; margin:0; color:#222; }
+.title{ color:var(--teal); margin:4px 0 12px; }
+.demographics{ display:flex; justify-content:space-between; gap:16px; margin-top:6px; }
+.demographics .left, .demographics .right{ width:48%; }
+.demographics .row{ display:flex; gap:8px; margin:4px 0; flex-wrap:wrap; }
+.demographics .label{ font-weight:700; min-width:160px; color:#333; }
+.divider{ border-bottom:3px solid var(--border); margin:8px 0 12px; }
+.notice{
+  background:var(--light);
+  border-left:4px solid var(--teal);
+  padding:10px 12px;
+  color:#0f4c5a;
+  font-weight:600;
+}
+.report-table{ width:100%; margin:18px auto 0; border-collapse:collapse; }
+.report-table th, .report-table td{ padding:10px 12px; vertical-align:top; border:1px solid var(--brand); }
+.report-table thead th{ background:var(--light); text-align:left; }
+.category-row td{ background:#fff; }
+.category-row{ break-inside: avoid; page-break-inside: avoid; }
+.report-table tfoot td{ border:none; padding:0; }
+.report-table .page-rule{ height:1px; background:#999; width:100%; }
+.category-name{ font-weight:700; width:32%; }
+.component-list{ list-style:none; padding:0; margin:0; }
+.component-list li{ display:flex; gap:8px; align-items:flex-start; padding:6px 0; border-bottom:1px solid var(--border); }
+.component-list li:last-child{ border-bottom:none; }
+.component-list li .icon{ width:22px; display:inline-block; color:var(--brand); font-weight:700; font-size:18px; line-height:1; }
+.component-list li.unselected .txt{ color:#555; }
+
+/* Print tweaks */
+@media print{
+  .toolbar{ display:none !important; }
+  body{ padding:0.5in; }
+  .report-table thead{ display: table-header-group; }
+  .report-table tfoot{ display: table-footer-group; }
+}

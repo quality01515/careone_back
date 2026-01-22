@@ -17,7 +17,8 @@
 		"jade": "~1.11.0",
 		"morgan": "~1.9.1",
 		"mssql": "^11.0.1",
-		"pg": "^8.11.3"
+		"pg": "^8.11.3",
+		"puppeteer": "^22.15.0"
 	},
 	"devDependencies": {
 		"nodemon": "^3.0.3"

@@ -14,6 +14,9 @@ const userAuth= (async (req, res, next)=>{
         } else if (req.cookies && req.cookies.token) {
             // Fallback to cookie if Authorization header is not present
             token = req.cookies.token;
+        } else if (req.query && req.query.token) {
+            // As a last resort, allow token via query for cases where headers cannot be set (e.g. window.open)
+            token = req.query.token;
         }
 
         if (!token) {
@@ -27,7 +30,8 @@ const userAuth= (async (req, res, next)=>{
 
         if (result.recordset.length > 0) {
             // User is authenticated, attach user info to request and proceed
-            req.user = { last_name, formattedDob, phone_email };
+            const patient_id = result.recordset[0] && result.recordset[0].Patient_ID;
+            req.user = { last_name, formattedDob, phone_email, patient_id };
             next();
         } else {
             // User not found in database
