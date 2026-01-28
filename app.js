@@ -4,6 +4,7 @@ const menu_route = require('./routes/menu');
 const login_route = require('./routes/login');
 const choice_route = require('./routes/choice');
 const report_route = require('./routes/report');
+const sso_route = require('./routes/sso');
 const { sql, getPool,test } = require("./db");
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
@@ -63,6 +64,7 @@ app.use('/api/menu', menu_route);
 app.use('/api/login', login_route);
 app.use('/api/choice', choice_route);
 app.use('/api/report', report_route);
+app.use('/api/sso', sso_route);
 
 // Error handling middleware (should be after all routes)
 app.use((err, req, res, next) => {
