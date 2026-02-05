@@ -11,7 +11,7 @@ const cookieParser = require('cookie-parser');
 
 const app = express();
 
-const allowedOrigins = ['http://localhost:3002', 'http://127.0.0.1:3002', 'http://localhost:3001', 'http://127.0.0.1:3001', 'https://careone-health.com', 'https://www.careone-health.com', 'http://127.0.0.1:3002'];
+const allowedOrigins = ['http://localhost:3002', 'http://127.0.0.1:3002', 'http://localhost:3001', 'http://127.0.0.1:3001', 'https://careone-health.com', 'https://www.careone-health.com', 'http://127.0.0.1:3002', 'https://www.bestyearsforme.com', 'https://bestyearsforme.com'];
 
 // CORS configuration
 app.use(cors({
