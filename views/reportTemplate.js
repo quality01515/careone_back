@@ -115,7 +115,7 @@ function renderReportHTML(params) {
       <div class="content" style="margin-top:2px;">
         <table class="report-table" style="width:100%; margin:0 auto; border:1px solid; border-collapse:collapse; border-bottom: none; border-spacing:2px;" cellpadding="0" cellspacing="0">
           <thead style="background-color:#f2f2f2;">
-            <tr><th style="border:1px solid; border-collapse:collapse; border-bottom: none; border-top: none; border-left: none; text-align:left; padding-left: 5px; padding-bottom:10px; padding-top:10px;">Category</th><th style="text-align:left; padding-left: 5px;">Components parts of each Category</th></tr>
+            <tr><th style="border:1px solid; border-collapse:collapse; border-bottom: none; border-top: none; border-left: none; text-align:left; padding-left: 5px; padding-bottom:10px; padding-top:10px;">Category</th><th style="text-align:left; padding-left: 5px;">Component parts of each Category</th></tr>
           </thead>
           <tbody style="border:1px solid; border-collapse:collapse; border-bottom: none; border-left: none; border-right: none; border-spacing:2px;">
             ${categoriesRows}
