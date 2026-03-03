@@ -26,7 +26,7 @@ const get_menus = async (patient_id) => {
                     ON ch.PortalComponents_ID = p.PortalComponents_ID
                   AND ch.Patient_ID = @Patient_ID
                 WHERE ISNULL(c.Hidden, 0) = 0
-                ORDER BY c.PortalCategories_ID, c.SortOrder, ISNULL(p.SortOrder, 0); 
+                ORDER BY c.SortOrder, c.PortalCategories_ID, ISNULL(p.SortOrder, 0); 
             `);
 
     return result;
