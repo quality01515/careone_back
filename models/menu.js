@@ -14,6 +14,7 @@ const get_menus = async (patient_id) => {
                     c.PortalCategoriesDescription AS PortalCategoriesDescription, 
                     p.PortalComponents_ID, 
                     p.PortalComponentsName, 
+                    p.PortalComponentsURL, 
                     p.PortalComponentsDescription, 
                     p.ExternalLink,
                     ISNULL(ch.Hidden, 1) AS Hidden   -- default to 1 when no row exists

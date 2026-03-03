@@ -32,6 +32,7 @@ router.post('/', userAuth, async (req, res) => {
         PortalComponents_ID: item.PortalComponents_ID,
         PortalComponentsName: item.PortalComponentsName,
         PortalComponentsDescription: item.PortalComponentsDescription,
+        PortalComponentsURL: item.PortalComponentsURL,
         ExternalLink: item.ExternalLink,
         Hidden: item.Hidden == 0? 0 : 1
       });
