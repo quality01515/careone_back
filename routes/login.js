@@ -30,6 +30,11 @@ router.post('/', async (req, res) => {
 
       let patient_id = result.recordset[0]['Patient_ID'];
       let first_name = result.recordset[0]['FirstName'];
+      // Use actual DOB from database (source of truth), not user input
+      const dbDob = result.recordset[0]['DOB'];
+      const dobForClient = dbDob
+        ? new Date(dbDob).toISOString().split('T')[0]
+        : formattedDob;
 
       const hra_status = await check_HRA_status(patient_id)
 
@@ -39,7 +44,7 @@ router.post('/', async (req, res) => {
         patient_id,
         first_name,
         last_name,
-        dob,
+        dob: dobForClient,
         ...hra_status
       }); 
       
