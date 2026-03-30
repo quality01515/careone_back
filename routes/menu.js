@@ -27,11 +27,17 @@ router.post("/", userAuth, async (req, res) => {
     let aiMatchedComponentIds = new Set();
     if (apiKey && aiSourceRows.length && catalogRows.length) {
       try {
+        const t0 = Date.now();
         aiMatchedComponentIds = await matchAISourceToPortalComponentIds({
           sourceRows: aiSourceRows,
           catalogRows,
           apiKey,
         });
+        if (process.env.APP_DB_DEBUG === "true") {
+          console.log(
+            `portal AI match: ${Date.now() - t0}ms, sourceRows=${aiSourceRows.length}, matchedIds=${aiMatchedComponentIds.size}`
+          );
+        }
       } catch (aiErr) {
         console.error("OpenAI portal match failed:", aiErr.message || aiErr);
       }
@@ -61,6 +67,8 @@ router.post("/", userAuth, async (req, res) => {
 
       const category = categoryMap.get(item.PortalCategories_ID);
       const pid = Number(item.PortalComponents_ID);
+      const aiHit =
+        Number.isFinite(pid) && aiMatchedComponentIds.has(pid);
       category.components.push({
         PortalComponents_ID: item.PortalComponents_ID,
         PortalComponentsName: item.PortalComponentsName,
@@ -68,7 +76,7 @@ router.post("/", userAuth, async (req, res) => {
         PortalComponentsURL: item.PortalComponentsURL,
         ExternalLink: item.ExternalLink,
         Hidden: item.Hidden == 0 ? 0 : 1,
-        aiSourceMatch: aiMatchedComponentIds.has(pid),
+        aiSourceMatch: aiHit,
       });
     });
 
