@@ -1,59 +1,21 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const {
-  get_menus,
-  get_temp_portal_ai_source,
-  get_portal_components_catalog,
-} = require("../models/menu.js");
+const { get_menus } = require("../models/menu.js");
+const jwt = require("jsonwebtoken")
 const { userAuth } = require("../middlewares/auth.js");
-const {
-  matchAISourceToPortalComponentIds,
-} = require("../services/portalAiMatch.js");
-require("dotenv").config();
+require('dotenv').config();
 
-router.post("/", userAuth, async (req, res) => {
-  try {
-    const patient_id = req.body.patient_id;
 
-    const [result, aiSourceRows, catalogRows] = await Promise.all([
-      get_menus(patient_id),
-      get_temp_portal_ai_source(patient_id),
-      get_portal_components_catalog(),
-    ]);
+router.post('/', userAuth, async (req, res) => {  
+   try {
+    let patient_id = req.body.patient_id;
+    const result = await get_menus(patient_id);
 
     const categories = result.recordset;
-    const apiKey = process.env.OPENAI_API_KEY;
-
-    let aiMatchedComponentIds = new Set();
-    if (apiKey && aiSourceRows.length && catalogRows.length) {
-      try {
-        const t0 = Date.now();
-        aiMatchedComponentIds = await matchAISourceToPortalComponentIds({
-          sourceRows: aiSourceRows,
-          catalogRows,
-          apiKey,
-        });
-        if (process.env.APP_DB_DEBUG === "true") {
-          console.log(
-            `portal AI match: ${Date.now() - t0}ms, sourceRows=${aiSourceRows.length}, matchedIds=${aiMatchedComponentIds.size}`
-          );
-        }
-      } catch (aiErr) {
-        console.error("OpenAI portal match failed:", aiErr.message || aiErr);
-      }
-    } else if (!apiKey && aiSourceRows.length) {
-      console.warn(
-        "OPENAI_API_KEY is not set; skipping tempPortalAISource → PortalComponents matching."
-      );
-    }
 
     const categoryMap = new Map();
-
-    categories.forEach((item) => {
-      if (item.PortalComponents_ID == null) {
-        return;
-      }
-
+    
+    categories.forEach(item => {
       if (!categoryMap.has(item.PortalCategories_ID)) {
         categoryMap.set(item.PortalCategories_ID, {
           PortalCategories_ID: item.PortalCategories_ID,
@@ -66,17 +28,13 @@ router.post("/", userAuth, async (req, res) => {
       }
 
       const category = categoryMap.get(item.PortalCategories_ID);
-      const pid = Number(item.PortalComponents_ID);
-      const aiHit =
-        Number.isFinite(pid) && aiMatchedComponentIds.has(pid);
       category.components.push({
         PortalComponents_ID: item.PortalComponents_ID,
         PortalComponentsName: item.PortalComponentsName,
         PortalComponentsDescription: item.PortalComponentsDescription,
         PortalComponentsURL: item.PortalComponentsURL,
         ExternalLink: item.ExternalLink,
-        Hidden: item.Hidden == 0 ? 0 : 1,
-        aiSourceMatch: aiHit,
+        Hidden: item.Hidden == 0? 0 : 1
       });
     });
 

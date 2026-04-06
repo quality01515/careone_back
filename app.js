@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const menu_route = require('./routes/menu');
+const menuAiMatch_route = require('./routes/menuAiMatch');
 const login_route = require('./routes/login');
 const choice_route = require('./routes/choice');
 const report_route = require('./routes/report');
@@ -61,6 +62,7 @@ app.get('/health', (req, res) => {
 
 // Use the insert/update routes
 app.use('/api/menu', menu_route);
+app.use('/api/menuAiMatch', menuAiMatch_route);
 app.use('/api/login', login_route);
 app.use('/api/choice', choice_route);
 app.use('/api/report', report_route);
